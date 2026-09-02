@@ -1,0 +1,19 @@
+{
+  "name": "Da Despensa",
+  "short_name": "Da Despensa",
+  "description": "Encontre receitas a partir dos ingredientes que você já tem em casa.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1b2420",
+  "theme_color": "#1F3B2C",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

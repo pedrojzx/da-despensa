@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Da Despensa — encontre receitas pelo que você tem</title>
+  <meta name="description" content="Diga um ingrediente que você tem em casa e encontre receitas para fazer com ele, com modo de preparo passo a passo." />
+  <meta name="theme-color" content="#1F3B2C" />
+  <meta name="color-scheme" content="light dark" />
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+
+  <meta property="og:title" content="Da Despensa — encontre receitas pelo que você tem" />
+  <meta property="og:description" content="Busque receitas por ingrediente, veja o passo a passo e marque o que já tem em casa." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.themealdb.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="wordmark">
+      <span class="wordmark-main">Da Despensa</span>
+      <span class="wordmark-sub">receitas a partir do que você já tem</span>
+    </div>
+    <div class="header-actions">
+      <button id="fav-toggle" class="chip-btn" type="button" aria-pressed="false">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M12 20.5s-7.5-4.6-9.8-9.2C.7 8 2.3 4.5 5.7 4c2-.3 3.8.6 5 2.2C11.9 4.6 13.7 3.7 15.7 4c3.4.5 5 4 3.5 7.3-2.3 4.6-9.2 9.2-9.2 9.2Z"/>
+        </svg>
+        <span class="visually-hidden">Ver favoritos</span>
+        <span id="fav-count" class="fav-count" hidden>0</span>
+      </button>
+      <button id="theme-toggle" class="chip-btn" type="button" aria-label="Alternar tema claro ou escuro">
+        <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="search-panel" aria-label="Buscar por ingrediente">
+      <form id="search-form" role="search" autocomplete="off">
+        <label for="ingredient-input" class="visually-hidden">Nome do ingrediente</label>
+        <input
+          id="ingredient-input"
+          name="ingredient"
+          type="text"
+          inputmode="search"
+          placeholder="O que você tem? Ex.: frango, tomate, arroz"
+          aria-describedby="search-hint"
+          aria-expanded="false"
+          aria-controls="suggestions"
+          role="combobox"
+          aria-autocomplete="list"
+        />
+        <button type="submit" class="primary-btn">Buscar</button>
+      </form>
+      <p id="search-hint" class="visually-hidden">Digite ao menos duas letras para ver sugestões de ingredientes.</p>
+      <ul id="suggestions" class="suggestions" hidden></ul>
+      <button id="surprise-btn" type="button" class="text-btn">
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 4h5l2 3h9v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>
+        </svg>
+        Me surpreenda
+      </button>
+    </section>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <section id="empty-state" class="empty-state">
+      <h2>Sua despensa está esperando</h2>
+      <p>Digite um ingrediente que você tem em casa, ou peça uma sugestão aleatória, para ver receitas com o modo de preparo completo.</p>
+    </section>
+
+    <section id="results" class="results-grid" hidden aria-label="Receitas encontradas"></section>
+
+    <section id="favorites-view" class="results-grid" hidden aria-label="Receitas favoritas"></section>
+
+    <section id="recipe-detail" class="recipe-detail" hidden aria-label="Detalhe da receita">
+      <button id="back-btn" type="button" class="text-btn back-btn">
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 5l-7 7 7 7"/>
+        </svg>
+        Voltar
+      </button>
+
+      <article>
+        <div class="recipe-media">
+          <img id="recipe-image" alt="" width="480" height="480" loading="lazy" />
+          <button id="recipe-fav-btn" type="button" class="fav-pin" aria-pressed="false">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+              <path d="M12 20.5s-7.5-4.6-9.8-9.2C.7 8 2.3 4.5 5.7 4c2-.3 3.8.6 5 2.2C11.9 4.6 13.7 3.7 15.7 4c3.4.5 5 4 3.5 7.3-2.3 4.6-9.2 9.2-9.2 9.2Z"/>
+            </svg>
+            <span class="visually-hidden">Salvar nos favoritos</span>
+          </button>
+        </div>
+
+        <h2 id="recipe-title">—</h2>
+        <div id="recipe-tags" class="recipe-tags"></div>
+
+        <a id="recipe-video" class="video-link" href="#" target="_blank" rel="noopener noreferrer" hidden>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M8 6.5l9 5.5-9 5.5v-11Z"/>
+          </svg>
+          Ver vídeo no YouTube
+        </a>
+
+        <h3>Ingredientes</h3>
+        <p class="ingredients-hint">Marque o que você já tem em casa.</p>
+        <ul id="recipe-ingredients" class="ingredient-tags"></ul>
+
+        <h3>Modo de preparo</h3>
+        <ol id="recipe-steps" class="steps-list"></ol>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Receitas de <a href="https://www.themealdb.com/" target="_blank" rel="noopener noreferrer">TheMealDB</a>.</p>
+  </footer>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
