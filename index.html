@@ -63,8 +63,8 @@
           name="ingredient"
           type="text"
           inputmode="search"
-          placeholder="O que você tem? Ex.: frango, tomate, arroz"
-          aria-describedby="search-hint"
+          placeholder="O que você tem? Ex.: chicken, tomato, rice"
+          aria-describedby="search-hint language-hint"
           aria-expanded="false"
           aria-controls="suggestions"
           role="combobox"
@@ -79,7 +79,8 @@
           <span class="visually-hidden">Buscar por voz</span>
         </button>
       </form>
-      <p id="mic-hint" class="mic-hint" hidden role="status" aria-live="polite">Ouvindo… diga o nome de um ingrediente.</p>
+      <p id="language-hint" class="language-hint">Busque o ingrediente em inglês (ex.: chicken, tomato, rice, egg, cheese) — a base de receitas só reconhece nomes em inglês.</p>
+      <p id="mic-hint" class="mic-hint" hidden role="status" aria-live="polite">Ouvindo… diga o nome de um ingrediente em inglês.</p>
       <p id="search-hint" class="visually-hidden">Digite ao menos duas letras para ver sugestões de ingredientes.</p>
       <ul id="suggestions" class="suggestions" hidden></ul>
       <button id="surprise-btn" type="button" class="text-btn">

@@ -242,6 +242,12 @@ main,
   color: var(--accent);
 }
 
+.language-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
 .fav-count {
   position: absolute;
   top: -4px;
