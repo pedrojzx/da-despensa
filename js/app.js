@@ -8,6 +8,141 @@
 
   const API_BASE = "https://www.themealdb.com/api/json/v1/1";
 
+  // -------------------------------------------------------------------
+  // TheMealDB só conhece nomes de ingredientes em inglês. Este dicionário
+  // traduz os termos mais comuns em português para o valor esperado pela
+  // API, e também é usado para mostrar sugestões em português ao usuário.
+  // -------------------------------------------------------------------
+  const PT_TO_EN_INGREDIENTS = {
+    "frango": "chicken",
+    "peito de frango": "chicken breast",
+    "coxa de frango": "chicken thighs",
+    "carne": "beef",
+    "carne bovina": "beef",
+    "carne moida": "ground beef",
+    "carne de porco": "pork",
+    "porco": "pork",
+    "bacon": "bacon",
+    "linguica": "sausage",
+    "salsicha": "sausage",
+    "presunto": "ham",
+    "peru": "turkey",
+    "cordeiro": "lamb",
+    "pato": "duck",
+    "peixe": "fish",
+    "salmao": "salmon",
+    "atum": "tuna",
+    "camarao": "shrimp",
+    "lagosta": "lobster",
+    "caranguejo": "crab",
+    "polvo": "octopus",
+    "lula": "squid",
+    "ovo": "egg",
+    "ovos": "eggs",
+    "leite": "milk",
+    "leite de coco": "coconut milk",
+    "manteiga": "butter",
+    "queijo": "cheese",
+    "queijo cremoso": "cream cheese",
+    "requeijao": "cream cheese",
+    "mussarela": "mozzarella",
+    "parmesao": "parmesan",
+    "creme de leite": "cream",
+    "creme azedo": "sour cream",
+    "iogurte": "yogurt",
+    "arroz": "rice",
+    "macarrao": "pasta",
+    "massa": "pasta",
+    "espaguete": "spaghetti",
+    "farinha": "flour",
+    "pao": "bread",
+    "batata": "potato",
+    "batatas": "potatoes",
+    "tomate": "tomato",
+    "tomates": "tomatoes",
+    "cebola": "onion",
+    "alho": "garlic",
+    "cenoura": "carrot",
+    "cenouras": "carrots",
+    "pimentao": "bell pepper",
+    "pimenta": "chili",
+    "pimenta do reino": "black pepper",
+    "pepino": "cucumber",
+    "alface": "lettuce",
+    "espinafre": "spinach",
+    "brocolis": "broccoli",
+    "couve flor": "cauliflower",
+    "abobrinha": "zucchini",
+    "berinjela": "eggplant",
+    "cogumelo": "mushroom",
+    "cogumelos": "mushrooms",
+    "milho": "corn",
+    "ervilha": "peas",
+    "ervilhas": "peas",
+    "feijao": "beans",
+    "feijao preto": "black beans",
+    "grao de bico": "chickpeas",
+    "lentilha": "lentils",
+    "limao": "lemon",
+    "laranja": "orange",
+    "maca": "apple",
+    "banana": "banana",
+    "morango": "strawberries",
+    "morangos": "strawberries",
+    "abacate": "avocado",
+    "coco": "coconut",
+    "acucar": "sugar",
+    "sal": "salt",
+    "azeite": "olive oil",
+    "oleo": "vegetable oil",
+    "mel": "honey",
+    "vinagre": "vinegar",
+    "molho de soja": "soy sauce",
+    "manjericao": "basil",
+    "oregano": "oregano",
+    "salsa": "parsley",
+    "coentro": "coriander",
+    "canela": "cinnamon",
+    "gengibre": "ginger",
+    "cominho": "cumin",
+    "paprica": "paprika",
+    "chocolate": "chocolate",
+    "baunilha": "vanilla",
+    "vinho": "wine",
+    "cerveja": "beer",
+    "agua": "water",
+    "fermento": "yeast",
+    "mostarda": "mustard",
+    "maionese": "mayonnaise",
+    "noz moscada": "nutmeg",
+    "alecrim": "rosemary",
+    "tomilho": "thyme",
+  };
+
+  function stripAccents(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function normalizeQuery(str) {
+    return stripAccents(str.trim().toLowerCase());
+  }
+
+  // Traduz um termo digitado (em português ou inglês) para o valor que a
+  // API entende. Faz correspondência exata primeiro, depois por prefixo.
+  function translateToApiTerm(input) {
+    const normalized = normalizeQuery(input);
+    if (PT_TO_EN_INGREDIENTS[normalized]) {
+      return PT_TO_EN_INGREDIENTS[normalized];
+    }
+    const partialMatch = Object.keys(PT_TO_EN_INGREDIENTS).find(
+      (key) => normalized.startsWith(key) || key.startsWith(normalized)
+    );
+    if (partialMatch) {
+      return PT_TO_EN_INGREDIENTS[partialMatch];
+    }
+    return input; // assume que já é um termo em inglês reconhecido pela API
+  }
+
   const els = {
     form: document.getElementById("search-form"),
     input: document.getElementById("ingredient-input"),
@@ -29,6 +164,9 @@
     recipeIngredients: document.getElementById("recipe-ingredients"),
     recipeSteps: document.getElementById("recipe-steps"),
     themeToggle: document.getElementById("theme-toggle"),
+    installBtn: document.getElementById("install-btn"),
+    micBtn: document.getElementById("mic-btn"),
+    micHint: document.getElementById("mic-hint"),
   };
 
   const state = {
@@ -414,10 +552,101 @@
     applyTheme();
   }
 
+  // -------------------------------------------------------------------
+  // PWA: prompt de instalação personalizado
+  // -------------------------------------------------------------------
+  let deferredInstallPrompt = null;
+
+  function setupInstallPrompt() {
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      els.installBtn.hidden = false;
+    });
+
+    els.installBtn.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      els.installBtn.hidden = true;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+    });
+
+    window.addEventListener("appinstalled", () => {
+      els.installBtn.hidden = true;
+      deferredInstallPrompt = null;
+    });
+  }
+
+  // -------------------------------------------------------------------
+  // Recurso de hardware: busca por voz usando o microfone (Web Speech API)
+  // -------------------------------------------------------------------
+  function setupVoiceSearch() {
+    const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionCtor) {
+      // Navegador sem suporte (ex.: Safari em iOS): mantém o botão oculto.
+      return;
+    }
+
+    const recognition = new SpeechRecognitionCtor();
+    recognition.lang = "pt-BR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    let isListening = false;
+
+    els.micBtn.hidden = false;
+
+    recognition.addEventListener("start", () => {
+      isListening = true;
+      els.micBtn.setAttribute("aria-pressed", "true");
+      els.micHint.hidden = false;
+    });
+
+    recognition.addEventListener("end", () => {
+      isListening = false;
+      els.micBtn.setAttribute("aria-pressed", "false");
+      els.micHint.hidden = true;
+    });
+
+    recognition.addEventListener("error", (event) => {
+      isListening = false;
+      els.micBtn.setAttribute("aria-pressed", "false");
+      els.micHint.hidden = true;
+      if (event.error === "not-allowed" || event.error === "permission-denied") {
+        setStatus("Permissão de microfone negada. Ative-a nas configurações do navegador.", true);
+      } else if (event.error !== "no-speech" && event.error !== "aborted") {
+        setStatus("Não foi possível ouvir agora. Tente novamente.", true);
+      }
+    });
+
+    recognition.addEventListener("result", (event) => {
+      const spoken = event.results[0][0].transcript.trim();
+      if (spoken) {
+        els.input.value = titleCase(spoken);
+        runSearch(spoken);
+      }
+    });
+
+    els.micBtn.addEventListener("click", () => {
+      if (isListening) {
+        recognition.stop();
+        return;
+      }
+      hideSuggestions();
+      try {
+        recognition.start();
+      } catch {
+        // já em execução; ignora
+      }
+    });
+  }
+
   function init() {
     applyTheme();
     updateFavCount();
     loadIngredientList();
+    setupInstallPrompt();
+    setupVoiceSearch();
 
     els.form.addEventListener("submit", handleSearchSubmit);
     els.input.addEventListener("input", handleInputChange);

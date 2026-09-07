@@ -9,6 +9,7 @@
   <meta name="color-scheme" content="light dark" />
 
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="manifest" href="manifest.json" />
 
   <meta property="og:title" content="Da Despensa — encontre receitas pelo que você tem" />
@@ -31,6 +32,12 @@
       <span class="wordmark-sub">receitas a partir do que você já tem</span>
     </div>
     <div class="header-actions">
+      <button id="install-btn" class="chip-btn install-btn" type="button" hidden>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+        </svg>
+        Instalar app
+      </button>
       <button id="fav-toggle" class="chip-btn" type="button" aria-pressed="false">
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
           <path d="M12 20.5s-7.5-4.6-9.8-9.2C.7 8 2.3 4.5 5.7 4c2-.3 3.8.6 5 2.2C11.9 4.6 13.7 3.7 15.7 4c3.4.5 5 4 3.5 7.3-2.3 4.6-9.2 9.2-9.2 9.2Z"/>
@@ -64,7 +71,15 @@
           aria-autocomplete="list"
         />
         <button type="submit" class="primary-btn">Buscar</button>
+        <button id="mic-btn" type="button" class="mic-btn" hidden aria-pressed="false">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M9 21.5h6"/>
+          </svg>
+          <span class="visually-hidden">Buscar por voz</span>
+        </button>
       </form>
+      <p id="mic-hint" class="mic-hint" hidden role="status" aria-live="polite">Ouvindo… diga o nome de um ingrediente.</p>
       <p id="search-hint" class="visually-hidden">Digite ao menos duas letras para ver sugestões de ingredientes.</p>
       <ul id="suggestions" class="suggestions" hidden></ul>
       <button id="surprise-btn" type="button" class="text-btn">
@@ -130,5 +145,14 @@
   </footer>
 
   <script src="js/app.js" defer></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch((err) => {
+          console.warn("Falha ao registrar o service worker:", err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
