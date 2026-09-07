@@ -2,7 +2,7 @@
 
 Progressive Web App (PWA) que encontra receitas a partir de um ingrediente que você já tem em casa. Instalável no celular ou no computador, funciona com a tela inicial própria (sem barra do navegador), guarda o essencial em cache para abrir mesmo com internet instável, e usa o **microfone do dispositivo** para busca por voz.
 
-**[Ver aplicação publicada →](#)** (https://pedrojzx.github.io/da-despensa/)
+**[Ver aplicação publicada →](#)** *(atualize este link depois do deploy — veja abaixo)*
 
 ## Funcionalidades
 

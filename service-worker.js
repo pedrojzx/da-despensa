@@ -5,7 +5,7 @@
 // estar atualizados; cair para o cache só serve para o casco da app).
 // =====================================================================
 
-const CACHE_NAME = "da-despensa-v1";
+const CACHE_NAME = "da-despensa-v2";
 
 const APP_SHELL = [
   "./",
